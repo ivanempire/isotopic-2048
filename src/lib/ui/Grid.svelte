@@ -3,26 +3,23 @@
 	export let height: number;
 	export let isotopes: Isotope[];
 
-	type Isotope = {
-		id: number;
-		value: number;
-		x: number;
-		y: number;
-		merging?: boolean;
-		new?: boolean;
-		decay?: number;
-	};
+	const grid: (Isotope | null)[][] = [];
 
-	console.log('Got isotopes: ', isotopes);
-
-	// Optional: construct a quick lookup map for faster rendering
-	const cellMap = new Map<string, Isotope>();
 	$: {
-		cellMap.clear();
+		grid.length = 0;
+		for (let y = 0; y < height; y++) {
+			const row: (Isotope | null)[] = [];
+			for (let x = 0; x < width; x++) {
+				row.push(null);
+			}
+			grid.push(row);
+		}
+
 		for (const iso of isotopes) {
-			cellMap.set(`${iso.x},${iso.y}`, iso);
+			grid[iso.y][iso.x] = iso;
 		}
 	}
+
 </script>
 
 <article
@@ -34,11 +31,11 @@
     gap: 15px;
   "
 >
-	{#each Array(height) as _, y}
-		{#each Array(width) as _, x}
-			{#if cellMap.has(`${x},${y}`)}
+	{#each grid as row}
+		{#each row as cell}
+			{#if cell}
 				<div class="cell occupied">
-					{cellMap.get(`${x},${y}`)?.value}
+					{cell.value}
 				</div>
 			{:else}
 				<div class="cell empty" />

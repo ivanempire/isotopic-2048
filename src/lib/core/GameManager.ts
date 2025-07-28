@@ -1,7 +1,7 @@
 export class GameManager {
 	width: number;
 	height: number;
-	isotopes: Isotope[] = [];
+	private grid: (Isotope | null)[][] = [];
 	private nextId = 0;
 
 	constructor(width: number, height: number) {
@@ -11,16 +11,18 @@ export class GameManager {
 	}
 
 	reset() {
-		this.isotopes = [];
+		this.grid = Array.from({ length: this.height }, () =>
+			Array.from({ length: this.width }, () => null)
+		);
+		this.nextId = 0;
 		this.createInitialIsotopes();
 	}
 
-	createInitialIsotopes() {
+	private createInitialIsotopes(): void {
 		const empty = this.getEmptyCells();
 		if (empty.length === 0) return;
 
 		const spawnCount = Math.min(2, empty.length);
-		const newIsotopes: Isotope[] = [];
 
 		for (let i = 0; i < spawnCount; i++) {
 			const index = Math.floor(Math.random() * empty.length);
@@ -28,20 +30,18 @@ export class GameManager {
 
 			const value = Math.random() < 0.9 ? 2 : 4;
 
-			newIsotopes.push({
+			this.grid[y][x] = {
 				id: this.nextId++,
 				value,
 				x,
 				y,
 				new: true
-			});
+			};
 		}
-
-		this.isotopes.push(...newIsotopes);
 	}
 
 	getIsotopes(): Isotope[] {
-		return this.isotopes;
+		return this.grid.flat().filter((iso): iso is Isotope => iso !== null);
 	}
 
 	moveUp(): void {
@@ -61,12 +61,11 @@ export class GameManager {
 	}
 
 	private getEmptyCells(): { x: number; y: number }[] {
-		const occupied = new Set(this.isotopes.map((t) => `${t.x},${t.y}`));
 		const empty: { x: number; y: number }[] = [];
 
 		for (let y = 0; y < this.height; y++) {
 			for (let x = 0; x < this.width; x++) {
-				if (!occupied.has(`${x},${y}`)) {
+				if (this.grid[y][x] === null) {
 					empty.push({ x, y });
 				}
 			}
