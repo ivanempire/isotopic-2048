@@ -1,7 +1,7 @@
-import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import adapter from "@sveltejs/adapter-vercel";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
-/** @type {import('@sveltejs/kit').Config} */
+/** @type {import("@sveltejs/kit").Config} */
 const config = {
 	// Consult https://svelte.dev/docs/kit/integrations
 	// for more information about preprocessors
@@ -10,12 +10,12 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			$actions: './src/actions',
-			$components: './src/components',
-			$consts: './src/consts',
-			$lib: './src/lib',
-			$styles: './src/styles',
-			$server: './src/server'
+			$actions: "./src/actions",
+			$components: "./src/components",
+			$consts: "./src/consts",
+			$lib: "./src/lib",
+			$styles: "./src/styles",
+			$server: "./src/server"
 		}
 	}
 };

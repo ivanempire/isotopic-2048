@@ -5,11 +5,15 @@
 
 <div class="inline-block text-white text-center font-bold mt-2"
      style="
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background-color: #bbada0;
     padding: 15px 25px;
     border-radius: 3px;
     font-size: 25px;
-    line-height: 47px;
+    line-height: 1.2;
   "
 >
 

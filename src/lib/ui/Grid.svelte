@@ -3,32 +3,53 @@
     export let height: number;
     export let isotopes: Isotope[];
 
-    // Create row/column coordinate pairs
-    const coordinates = Array.from({ length: height * width }, (_, i) => ({
-        x: i % width,
-        y: Math.floor(i / width)
-    }));
+    const grid: (Isotope | null)[] = [];
 
-    function isotopeAt(x: number, y: number): Isotope | undefined {
-        return isotopes.find(t => t.x === x && t.y === y);
+    // TODO: May not be the best way...
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const match = isotopes.find(i => i.x === x && i.y === y);
+            grid.push(match ?? null);
+        }
     }
 </script>
 
-<div
-        class="grid relative"
+<article
         style="
-    grid-template-columns: repeat({width}, 1fr);
-    grid-template-rows: repeat({height}, 1fr);
-    gap: 15px;
-    padding: 15px;
-    background-color: #bbada0;
+        background-color: #bbada0;
+        border-radius: 6px;
+        display: grid;
+        grid-template-columns: repeat({width}, 1fr);
+        grid-template-rows: repeat({height}, 1fr);
+        padding: 15px;
+        gap: 15px;
   "
 >
-    {#each coordinates as { x, y }}
-        <div class="relative w-full aspect-square rounded-full bg-[#eee4da] flex items-center justify-center" style="border:1px solid red;width:50px;height:50px;">
-            {#if isotopeAt(x, y)}
-                <div>{isotopeAt(x, y).value}</div>
+    {#each grid as cell}
+        <div class="cell {cell ? 'occupied' : 'empty'}">
+            {#if cell}
+                {cell.value}
             {/if}
         </div>
     {/each}
-</div>
+</article>
+
+<style>
+    .cell {
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .occupied {
+        background: #ccc;
+    }
+
+    .empty {
+        background: #f0f0f0;
+    }
+</style>

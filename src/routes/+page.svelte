@@ -5,20 +5,34 @@
     import Header from "$lib/ui/Header.svelte";
     import { GameManager } from "$lib/core/GameManager";
 
-    const manager = new GameManager(4, 4);
+    let manager: GameManager;
+
+    if (!manager) {
+        manager = new GameManager(4, 4);
+    }
+
     let isotopes = manager.getIsotopes();
 
 </script>
 
-<section class="max-w-2xl mx-auto px-4 flex flex-col items-center gap-4">
+<section style="width:500px;border:1px solid red;">
+    <Header text="Isotopic 256" />
     <Score value={50} />
     <Score label="Best" value={100} />
-<!--    <Header text="Isotopic 256" />-->
-
-<!--    <div class="flex gap-4">-->
-<!--        <Score value={50} />-->
-<!--        <Score label="Best" value={100} />-->
-<!--    </div>-->
-
-<!--    <Grid width={4} height={4} isotopes={isotopes} />-->
+    <br />
+    <br />
+    <Grid width={4} height={4} isotopes={isotopes} />
 </section>
+
+<!--<section class="max-w-2xl mx-auto px-4 flex flex-col items-center gap-4">-->
+<!--&lt;!&ndash;    <Score value={50} />&ndash;&gt;-->
+<!--&lt;!&ndash;    <Score label="Best" value={100} />&ndash;&gt;-->
+<!--&lt;!&ndash;    <Header text="Isotopic 256" />&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <div class="flex gap-4">&ndash;&gt;-->
+<!--&lt;!&ndash;        <Score value={50} />&ndash;&gt;-->
+<!--&lt;!&ndash;        <Score label="Best" value={100} />&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <Grid width={4} height={4} isotopes={isotopes} />&ndash;&gt;-->
+<!--</section>-->

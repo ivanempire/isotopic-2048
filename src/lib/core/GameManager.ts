@@ -12,29 +12,32 @@ export class GameManager {
 
     reset() {
         this.isotopes = [];
-        // TODO: Can probably combine these
-        this.spawnRandomIsotope();
-        this.spawnRandomIsotope();
+        this.createInitialIsotopes();
     }
 
-    spawnRandomIsotope() {
+    createInitialIsotopes() {
         const empty = this.getEmptyCells();
         if (empty.length === 0) return;
 
-        const { x, y } = empty[Math.floor(Math.random() * empty.length)];
+        const spawnCount = Math.min(2, empty.length);
+        const newIsotopes: Isotope[] = [];
 
-        // TODO: Check what the original threshold is
-        const value = Math.random() < 0.9 ? 2 : 4;
+        for (let i = 0; i < spawnCount; i++) {
+            const index = Math.floor(Math.random() * empty.length);
+            const { x, y } = empty.splice(index, 1)[0];
 
-        console.log("What do we have? " + this.isotopes.length);
-        console.dir(this.isotopes);
-        this.isotopes.push({
-            id: this.nextId++,
-            value,
-            x,
-            y,
-            new: true
-        });
+            const value = Math.random() < 0.9 ? 2 : 4;
+
+            newIsotopes.push({
+                id: this.nextId++,
+                value,
+                x,
+                y,
+                new: true
+            });
+        }
+
+        this.isotopes.push(...newIsotopes);
     }
 
     getIsotopes(): Isotope[] {
