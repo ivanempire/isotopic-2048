@@ -1,4 +1,4 @@
-type Isotope = {
+export type Isotope = {
 	id: number;
 	value: number;
 	x: number;

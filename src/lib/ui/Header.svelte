@@ -13,6 +13,6 @@
 		float: left;
 		color: #776e65;
 		/* TODO: Import clear sans*/
-		font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+		font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
 	}
 </style>

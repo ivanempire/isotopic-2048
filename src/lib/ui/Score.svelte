@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let label: string = 'Score';
+	export let label: string = "Score";
 	export let value: number = 0;
 </script>
 

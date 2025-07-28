@@ -1,25 +1,13 @@
 <script lang="ts">
 	export let width: number;
 	export let height: number;
-	export let isotopes: Isotope[];
 
-	const grid: (Isotope | null)[][] = [];
+	import type { Isotope } from "$lib/core/Isotope";
+	import { gameStore } from "$lib/stores/gameStateStore";
 
-	$: {
-		grid.length = 0;
-		for (let y = 0; y < height; y++) {
-			const row: (Isotope | null)[] = [];
-			for (let x = 0; x < width; x++) {
-				row.push(null);
-			}
-			grid.push(row);
-		}
-
-		for (const iso of isotopes) {
-			grid[iso.y][iso.x] = iso;
-		}
-	}
-
+	// const grid: (Isotope | null)[][] = $gameStore.grid;
+	let { grid } = $gameStore;
+	console.log(grid);
 </script>
 
 <article

@@ -1,4 +1,4 @@
-import type { GameManager } from '$lib/core/GameManager';
+import type { GameManager } from "$lib/core/GameManager";
 
 export class KeyInterceptor {
 	private manager: GameManager;
@@ -6,21 +6,21 @@ export class KeyInterceptor {
 	constructor(manager: GameManager) {
 		this.manager = manager;
 		this.handleKey = this.handleKey.bind(this);
-		window.addEventListener('keydown', this.handleKey);
+		window.addEventListener("keydown", this.handleKey);
 	}
 
 	private handleKey(event: KeyboardEvent): void {
 		switch (event.key) {
-			case 'ArrowUp':
+			case "ArrowUp":
 				this.manager.moveUp();
 				break;
-			case 'ArrowDown':
+			case "ArrowDown":
 				this.manager.moveDown();
 				break;
-			case 'ArrowLeft':
+			case "ArrowLeft":
 				this.manager.moveLeft();
 				break;
-			case 'ArrowRight':
+			case "ArrowRight":
 				this.manager.moveRight();
 				break;
 			default:
