@@ -1,3 +1,3 @@
-<div class="min-h-screen w-screen bg-[#faf8ef] flex justify-center items-start py-8">
-    <slot />
+<div class="flex min-h-screen w-screen items-start justify-center bg-[#faf8ef] py-8">
+	<slot />
 </div>

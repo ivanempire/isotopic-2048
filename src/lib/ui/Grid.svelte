@@ -1,55 +1,68 @@
 <script lang="ts">
-    export let width: number;
-    export let height: number;
-    export let isotopes: Isotope[];
+	export let width: number;
+	export let height: number;
+	export let isotopes: Isotope[];
 
-    const grid: (Isotope | null)[] = [];
+	type Isotope = {
+		id: number;
+		value: number;
+		x: number;
+		y: number;
+		merging?: boolean;
+		new?: boolean;
+		decay?: number;
+	};
 
-    // TODO: May not be the best way...
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const match = isotopes.find(i => i.x === x && i.y === y);
-            grid.push(match ?? null);
-        }
-    }
+	console.log('Got isotopes: ', isotopes);
+
+	// Optional: construct a quick lookup map for faster rendering
+	const cellMap = new Map<string, Isotope>();
+	$: {
+		cellMap.clear();
+		for (const iso of isotopes) {
+			cellMap.set(`${iso.x},${iso.y}`, iso);
+		}
+	}
 </script>
 
 <article
-        style="
-        background-color: #bbada0;
-        border-radius: 6px;
-        display: grid;
-        grid-template-columns: repeat({width}, 1fr);
-        grid-template-rows: repeat({height}, 1fr);
-        padding: 15px;
-        gap: 15px;
+	style="
+    display: grid;
+    grid-template-columns: repeat({width}, 1fr);
+    grid-template-rows: repeat({height}, 1fr);
+    padding: 15px;
+    gap: 15px;
   "
 >
-    {#each grid as cell}
-        <div class="cell {cell ? 'occupied' : 'empty'}">
-            {#if cell}
-                {cell.value}
-            {/if}
-        </div>
-    {/each}
+	{#each Array(height) as _, y}
+		{#each Array(width) as _, x}
+			{#if cellMap.has(`${x},${y}`)}
+				<div class="cell occupied">
+					{cellMap.get(`${x},${y}`)?.value}
+				</div>
+			{:else}
+				<div class="cell empty" />
+			{/if}
+		{/each}
+	{/each}
 </article>
 
 <style>
-    .cell {
-        aspect-ratio: 1 / 1;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
+	.cell {
+		aspect-ratio: 1 / 1;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		font-size: 1.2rem;
+	}
 
-    .occupied {
-        background: #ccc;
-    }
+	.occupied {
+		background: #ccc;
+	}
 
-    .empty {
-        background: #f0f0f0;
-    }
+	.empty {
+		background: #f0f0f0;
+	}
 </style>

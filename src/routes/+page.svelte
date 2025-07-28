@@ -1,38 +1,28 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import Grid from '$lib/ui/Grid.svelte';
+	import Score from '$lib/ui/Score.svelte';
+	import Header from '$lib/ui/Header.svelte';
+	import { GameManager } from '$lib/core/GameManager';
+	import { KeyInterceptor } from '$lib/core/KeyInterceptor';
 
-    import Grid from "$lib/ui/Grid.svelte";
-    import Score from "$lib/ui/Score.svelte";
-    import Header from "$lib/ui/Header.svelte";
-    import { GameManager } from "$lib/core/GameManager";
+	let isotopes: Isotope[] = [];
 
-    let manager: GameManager;
-
-    if (!manager) {
-        manager = new GameManager(4, 4);
-    }
-
-    let isotopes = manager.getIsotopes();
-
+	onMount(() => {
+		const manager = new GameManager(4, 4);
+		const keyInterceptor = new KeyInterceptor(manager);
+		isotopes = manager.getIsotopes();
+		// isotopes = [...manager.getIsotopes()];
+	});
 </script>
 
 <section style="width:500px;border:1px solid red;">
-    <Header text="Isotopic 256" />
-    <Score value={50} />
-    <Score label="Best" value={100} />
-    <br />
-    <br />
-    <Grid width={4} height={4} isotopes={isotopes} />
+	<Header text="Isotopic 256" />
+	<Score value={50} />
+	<Score label="Best" value={100} />
+	<!-- TODO: Hack because it's not a store... -->
+	{#if isotopes.length}
+		<p>Isotopes loaded: {isotopes.length}</p>
+		<Grid width={4} height={4} {isotopes} />
+	{/if}
 </section>
-
-<!--<section class="max-w-2xl mx-auto px-4 flex flex-col items-center gap-4">-->
-<!--&lt;!&ndash;    <Score value={50} />&ndash;&gt;-->
-<!--&lt;!&ndash;    <Score label="Best" value={100} />&ndash;&gt;-->
-<!--&lt;!&ndash;    <Header text="Isotopic 256" />&ndash;&gt;-->
-
-<!--&lt;!&ndash;    <div class="flex gap-4">&ndash;&gt;-->
-<!--&lt;!&ndash;        <Score value={50} />&ndash;&gt;-->
-<!--&lt;!&ndash;        <Score label="Best" value={100} />&ndash;&gt;-->
-<!--&lt;!&ndash;    </div>&ndash;&gt;-->
-
-<!--&lt;!&ndash;    <Grid width={4} height={4} isotopes={isotopes} />&ndash;&gt;-->
-<!--</section>-->
