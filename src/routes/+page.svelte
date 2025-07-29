@@ -3,14 +3,11 @@
 	import Score from "$lib/ui/Score.svelte";
 	import Header from "$lib/ui/Header.svelte";
 	import { GameManager } from "$lib/core/GameManager";
+	import { gameState } from "$lib/stores/gameState.svelte";
 	import { KeyInterceptor } from "$lib/core/KeyInterceptor";
-	import { gameStore } from "$lib/stores/gameStateStore";
 
 	let manager: GameManager;
 	let interceptor: KeyInterceptor;
-
-	// Load game state from store
-	const state = $gameStore;
 
 	// On mount: initialize GameManager and KeyInterceptor
 	import { onMount } from "svelte";
@@ -23,16 +20,10 @@
 
 <section class="mx-auto w-full max-w-[500px] p-4">
 	<Header text="Isotopic 256" />
-	<Score value={state.currentScore} />
-	<Score label="Best" value={state.bestScore} />
+	<Score value={gameState.currentScore} />
+	<Score label="Best" value={gameState.bestScore} />
 
-	{#if state.grid.length}
+	{#if gameState.grid.length}
 		<Grid width={4} height={4} />
-	{/if}
-
-	{#if state.status === "WIN"}
-		<p>You win!</p>
-	{:else if state.status === "LOSS"}
-		<p>Game over.</p>
 	{/if}
 </section>

@@ -1,10 +1,5 @@
 import type { Isotope } from "$lib/core/Isotope";
-import {
-	setGrid,
-	setStatus,
-	updateCurrentScore,
-	updateBestScore
-} from "$lib/stores/gameStateStore";
+import { gameState } from "$lib/stores/gameState.svelte";
 
 export class GameManager {
 	width: number;
@@ -23,12 +18,55 @@ export class GameManager {
 			Array.from({ length: this.width }, () => null)
 		);
 		this.nextId = 0;
-		this.createInitialIsotopes();
+		this.createInitialPair();
+		// this.createDebugGrid();
 		this.notify();
-		setStatus("PLAYING");
+		gameState.status = "PLAYING";
 	}
 
-	private createInitialIsotopes(): void {
+	private createDebugGrid(): void {
+		const masses = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
+		let index = 0;
+
+		this.grid = Array.from({ length: this.height }, () =>
+			Array.from({ length: this.width }, () => null)
+		);
+
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				if (index < masses.length) {
+					const mass = masses[index++];
+					this.grid[y][x] = {
+						id: this.nextId++,
+						mass,
+						x,
+						y
+					};
+				}
+			}
+		}
+
+		this.notify();
+	}
+
+	private createSingleIsotope(): void {
+		const empty = this.getEmptyCells();
+		if (empty.length === 0) return;
+
+		const index = Math.floor(Math.random() * empty.length);
+		const { x, y } = empty.splice(index, 1)[0];
+
+		const mass = Math.random() < 0.9 ? 2 : 4;
+
+		this.grid[y][x] = {
+			id: this.nextId++,
+			mass,
+			x,
+			y
+		};
+	}
+
+	private createInitialPair(): void {
 		const empty = this.getEmptyCells();
 		if (empty.length === 0) return;
 
@@ -38,24 +76,133 @@ export class GameManager {
 			const index = Math.floor(Math.random() * empty.length);
 			const { x, y } = empty.splice(index, 1)[0];
 
-			const value = Math.random() < 0.9 ? 2 : 4;
+			const mass = Math.random() < 0.9 ? 2 : 4;
 
 			this.grid[y][x] = {
 				id: this.nextId++,
-				value,
+				mass,
 				x,
-				y,
-				new: true
+				y
 			};
 		}
 	}
 
 	moveUp(): void {
-		console.log("Moving up");
+		let moved = false;
+
+		for (let x = 0; x < this.width; x++) {
+			const column: (Isotope | null)[] = [];
+			for (let y = 0; y < this.height; y++) {
+				if (this.grid[y][x] !== null) {
+					column.push(this.grid[y][x]);
+				}
+			}
+
+			const newColumn: (Isotope | null)[] = [];
+			let y = 0;
+
+			while (y < column.length) {
+				const current = column[y];
+				const next = column[y + 1];
+
+				if (next && current!.mass === next.mass) {
+					// Merge
+					const merged: Isotope = {
+						id: this.nextId++,
+						mass: current!.mass * 2,
+						x,
+						y: newColumn.length
+					};
+					newColumn.push(merged);
+					y += 2;
+					moved = true;
+				} else {
+					// Slide
+					const movedTile: Isotope = {
+						...current!,
+						x,
+						y: newColumn.length
+					};
+					if (movedTile.y !== current!.y) moved = true;
+					newColumn.push(movedTile);
+					y += 1;
+				}
+			}
+
+			// Fill remainder with nulls
+			while (newColumn.length < this.height) {
+				newColumn.push(null);
+			}
+
+			for (let y = 0; y < this.height; y++) {
+				this.grid[y][x] = newColumn[y];
+			}
+		}
+
+		if (moved) {
+			this.createSingleIsotope();
+			this.notify();
+			// this.checkEnd();
+		}
 	}
 
 	moveDown(): void {
-		console.log("Moving down");
+		let moved = false;
+
+		for (let x = 0; x < this.width; x++) {
+			const column: (Isotope | null)[] = [];
+			for (let y = this.height - 1; y >= 0; y--) {
+				if (this.grid[y][x] !== null) {
+					column.push(this.grid[y][x]);
+				}
+			}
+
+			const newColumn: (Isotope | null)[] = [];
+			let i = 0;
+
+			while (i < column.length) {
+				const current = column[i];
+				const next = column[i + 1];
+
+				if (next && current!.mass === next.mass) {
+					// Merge
+					const merged: Isotope = {
+						id: this.nextId++,
+						mass: current!.mass * 2,
+						x,
+						y: this.height - 1 - newColumn.length
+					};
+					newColumn.push(merged);
+					i += 2;
+					moved = true;
+				} else {
+					// Slide
+					const movedTile: Isotope = {
+						...current!,
+						x,
+						y: this.height - 1 - newColumn.length
+					};
+					if (movedTile.y !== current!.y) moved = true;
+					newColumn.push(movedTile);
+					i += 1;
+				}
+			}
+
+			// Fill remainder with nulls
+			while (newColumn.length < this.height) {
+				newColumn.push(null);
+			}
+
+			for (let y = 0; y < this.height; y++) {
+				this.grid[y][x] = newColumn[this.height - 1 - y];
+			}
+		}
+
+		if (moved) {
+			this.createSingleIsotope();
+			this.notify();
+			// this.checkEnd();
+		}
 	}
 
 	moveLeft(): void {
@@ -72,14 +219,13 @@ export class GameManager {
 				const current = filtered[x];
 				const next = filtered[x + 1];
 
-				if (next && current.value === next.value) {
+				if (next && current.mass === next.mass) {
 					// Merge
 					const merged: Isotope = {
 						id: this.nextId++,
-						value: current.value * 2,
+						mass: current.mass * 2,
 						x: newRow.length,
-						y,
-						new: false
+						y
 					};
 					newRow.push(merged);
 					x += 2;
@@ -89,8 +235,7 @@ export class GameManager {
 					const movedTile: Isotope = {
 						...current,
 						x: newRow.length,
-						y,
-						new: false
+						y
 					};
 					if (movedTile.x !== current.x) moved = true;
 					newRow.push(movedTile);
@@ -107,14 +252,63 @@ export class GameManager {
 		}
 
 		if (moved) {
-			this.createInitialIsotopes();
+			this.createSingleIsotope();
 			this.notify();
 			// this.checkEnd();
 		}
 	}
 
 	moveRight(): void {
-		console.log("Moving right");
+		let moved = false;
+
+		for (let y = 0; y < this.height; y++) {
+			const originalRow = this.grid[y];
+			const filtered = originalRow.filter((cell): cell is Isotope => cell !== null).reverse();
+
+			const newRow: (Isotope | null)[] = [];
+			let i = 0;
+
+			while (i < filtered.length) {
+				const current = filtered[i];
+				const next = filtered[i + 1];
+
+				if (next && current.mass === next.mass) {
+					// Merge
+					const merged: Isotope = {
+						id: this.nextId++,
+						mass: current.mass * 2,
+						x: this.width - 1 - newRow.length,
+						y
+					};
+					newRow.push(merged);
+					i += 2;
+					moved = true;
+				} else {
+					// Slide
+					const movedTile: Isotope = {
+						...current,
+						x: this.width - 1 - newRow.length,
+						y
+					};
+					if (movedTile.x !== current.x) moved = true;
+					newRow.push(movedTile);
+					i += 1;
+				}
+			}
+
+			// Fill remainder with nulls
+			while (newRow.length < this.width) {
+				newRow.push(null);
+			}
+
+			this.grid[y] = newRow.reverse();
+		}
+
+		if (moved) {
+			this.createInitialPair();
+			this.notify();
+			// this.checkEnd();
+		}
 	}
 
 	private getEmptyCells(): { x: number; y: number }[] {
@@ -135,11 +329,13 @@ export class GameManager {
 		// TODO: Sort of hacky for now, see if directly setting it will break reactivity or not
 		const snapshot = this.grid.map((row) => row.map((cell) => (cell ? { ...cell } : null)));
 
-		setGrid(snapshot);
+		gameState.grid = snapshot;
 
 		const score = this.calculateScore();
-		updateCurrentScore(score);
-		updateBestScore(score);
+
+		// TODO: Adjust
+		gameState.currentScore = score;
+		gameState.bestScore = score;
 	}
 
 	private calculateScore(): number {

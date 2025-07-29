@@ -1,9 +1,6 @@
 export type Isotope = {
 	id: number;
-	value: number;
+	mass: number;
 	x: number;
 	y: number;
-	merging?: boolean;
-	new?: boolean;
-	decay?: number;
 };
