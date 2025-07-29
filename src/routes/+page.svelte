@@ -1,27 +1,34 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import Grid from "$lib/ui/Grid.svelte";
 	import Score from "$lib/ui/Score.svelte";
 	import Header from "$lib/ui/Header.svelte";
 	import { GameManager } from "$lib/core/GameManager";
 	import { gameState } from "$lib/stores/gameState.svelte";
 	import { KeyInterceptor } from "$lib/core/KeyInterceptor";
+	import { SwipeInterceptor } from "$lib/core/SwipeInterceptor";
 
 	let manager: GameManager;
-	let interceptor: KeyInterceptor;
 
-	// On mount: initialize GameManager and KeyInterceptor
-	import { onMount } from "svelte";
+	/* eslint-disable @typescript-eslint/no-unused-vars */
+	let keyInterceptor: KeyInterceptor;
+	let swipeInterceptor: SwipeInterceptor;
+	/* eslint-enable @typescript-eslint/no-unused-vars */
 
+	// TODO: May not be needed...
 	onMount(() => {
 		manager = new GameManager(4, 4);
-		interceptor = new KeyInterceptor(manager);
+		keyInterceptor = new KeyInterceptor(manager);
+		swipeInterceptor = new SwipeInterceptor(manager);
 	});
 </script>
 
 <section class="mx-auto w-full max-w-[500px] p-4">
 	<Header text="Isotopic 256" />
-	<Score value={gameState.currentScore} />
-	<Score label="Best" value={gameState.bestScore} />
+	<div style="text-align: right;margin-bottom: 15px;">
+		<Score value={gameState.currentScore} />
+		<Score label="Best" value={gameState.bestScore} />
+	</div>
 
 	{#if gameState.grid.length}
 		<Grid width={4} height={4} />

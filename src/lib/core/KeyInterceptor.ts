@@ -28,8 +28,4 @@ export class KeyInterceptor {
 		}
 		event.preventDefault();
 	}
-
-	// public destroy(): void {
-	// 	window.removeEventListener("keydown", this.handleKey);
-	// }
 }
