@@ -1,3 +1,4 @@
+import { Direction } from "$lib/core/Direction";
 import type { GameManager } from "$lib/core/GameManager";
 
 export class KeyInterceptor {
@@ -12,16 +13,16 @@ export class KeyInterceptor {
 	private handleKey(event: KeyboardEvent): void {
 		switch (event.key) {
 			case "ArrowUp":
-				this.manager.moveUp();
+				this.manager.move(Direction.Up);
 				break;
 			case "ArrowDown":
-				this.manager.moveDown();
+				this.manager.move(Direction.Down);
 				break;
 			case "ArrowLeft":
-				this.manager.moveLeft();
+				this.manager.move(Direction.Left);
 				break;
 			case "ArrowRight":
-				this.manager.moveRight();
+				this.manager.move(Direction.Right);
 				break;
 			default:
 				return;

@@ -1,3 +1,4 @@
+import { Direction } from "$lib/core/Direction";
 import type { GameManager } from "$lib/core/GameManager";
 
 export class SwipeInterceptor {
@@ -34,15 +35,15 @@ export class SwipeInterceptor {
 
 		if (Math.abs(deltaX) > Math.abs(deltaY)) {
 			if (deltaX > 0) {
-				this.manager.moveRight();
+				this.manager.move(Direction.Right);
 			} else {
-				this.manager.moveLeft();
+				this.manager.move(Direction.Left);
 			}
 		} else {
 			if (deltaY > 0) {
-				this.manager.moveDown();
+				this.manager.move(Direction.Down);
 			} else {
-				this.manager.moveUp();
+				this.manager.move(Direction.Up);
 			}
 		}
 

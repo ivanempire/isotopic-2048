@@ -1,6 +1,7 @@
 import { tick } from "svelte";
 import type { Isotope } from "$lib/core/Isotope";
 import { gameState } from "$lib/stores/gameState.svelte";
+import { Direction } from "$lib/core/Direction";
 
 export class GameManager {
 	width: number;
@@ -42,7 +43,7 @@ export class GameManager {
 						mass,
 						x,
 						y,
-						new: true,
+						new: true
 					};
 				}
 			}
@@ -65,7 +66,7 @@ export class GameManager {
 			mass,
 			x,
 			y,
-			new: true,
+			new: true
 		};
 	}
 
@@ -86,230 +87,94 @@ export class GameManager {
 				mass,
 				x,
 				y,
-				new: true,
+				new: true
 			};
 		}
 	}
 
-	moveUp(): void {
+	move(direction: Direction): void {
 		let moved = false;
 
-		for (let x = 0; x < this.width; x++) {
-			const column: (Isotope | null)[] = [];
-			for (let y = 0; y < this.height; y++) {
-				if (this.grid[y][x] !== null) {
-					column.push(this.grid[y][x]);
-				}
+		// Figure out which way we're moving
+		const isVertical = direction === Direction.Up || direction === Direction.Down;
+		const isReverse = direction === Direction.Right || direction === Direction.Down;
+
+		// Set up the limits
+		const outerLimit = isVertical ? this.width : this.height;
+		const innerLimit = isVertical ? this.height : this.width;
+
+		for (let outer = 0; outer < outerLimit; outer++) {
+			const line: (Isotope | null)[] = [];
+
+			// Build set of isotopes on a per-line basis
+			for (let inner = 0; inner < innerLimit; inner++) {
+				const x = isVertical ? outer : isReverse ? this.width - 1 - inner : inner;
+				const y = isVertical ? (isReverse ? this.height - 1 - inner : inner) : outer;
+				const cell = this.grid[y][x];
+				if (cell !== null) line.push(cell);
 			}
 
-			const newColumn: (Isotope | null)[] = [];
-			let y = 0;
-
-			while (y < column.length) {
-				const current = column[y];
-				const next = column[y + 1];
-
-				if (next && current!.mass === next.mass) {
-					// Merge
-					const merged: Isotope = {
-						id: this.nextId++,
-						mass: current!.mass * 2,
-						x,
-						y: newColumn.length,
-						new: true, // maybe
-					};
-					newColumn.push(merged);
-					y += 2;
-					moved = true;
-				} else {
-					// Slide
-					const movedTile: Isotope = {
-						...current!,
-						x,
-						y: newColumn.length
-					};
-					if (movedTile.y !== current!.y) moved = true;
-					newColumn.push(movedTile);
-					y += 1;
-				}
-			}
-
-			// Fill remainder with nulls
-			while (newColumn.length < this.height) {
-				newColumn.push(null);
-			}
-
-			for (let y = 0; y < this.height; y++) {
-				this.grid[y][x] = newColumn[y];
-			}
-		}
-
-		if (moved) {
-			this.createSingleIsotope();
-			this.notify();
-			// this.checkEnd();
-		}
-	}
-
-	moveDown(): void {
-		let moved = false;
-
-		for (let x = 0; x < this.width; x++) {
-			const column: (Isotope | null)[] = [];
-			for (let y = this.height - 1; y >= 0; y--) {
-				if (this.grid[y][x] !== null) {
-					column.push(this.grid[y][x]);
-				}
-			}
-
-			const newColumn: (Isotope | null)[] = [];
+			const newLine: (Isotope | null)[] = [];
 			let i = 0;
 
-			while (i < column.length) {
-				const current = column[i];
-				const next = column[i + 1];
+			// Fuse isotopes on a per-line basis
+			while (i < line.length) {
+				const current = line[i];
+				const next = line[i + 1];
 
+				// Handle fusing two isotopes together
 				if (next && current!.mass === next.mass) {
-					// Merge
 					const merged: Isotope = {
 						id: this.nextId++,
 						mass: current!.mass * 2,
-						x,
-						y: this.height - 1 - newColumn.length,
-						new: true, // maybe
+						x: isVertical
+							? outer
+							: isReverse
+								? this.width - 1 - newLine.length
+								: newLine.length,
+						y: isVertical
+							? isReverse
+								? this.height - 1 - newLine.length
+								: newLine.length
+							: outer,
+						new: true
 					};
-					newColumn.push(merged);
+					newLine.push(merged);
 					i += 2;
 					moved = true;
 				} else {
-					// Slide
+					// This is just a moved isotope
 					const movedTile: Isotope = {
 						...current!,
-						x,
-						y: this.height - 1 - newColumn.length
+						x: isVertical
+							? outer
+							: isReverse
+								? this.width - 1 - newLine.length
+								: newLine.length,
+						y: isVertical
+							? isReverse
+								? this.height - 1 - newLine.length
+								: newLine.length
+							: outer
 					};
-					if (movedTile.y !== current!.y) moved = true;
-					newColumn.push(movedTile);
+					if (movedTile.x !== current!.x || movedTile.y !== current!.y) moved = true;
+					newLine.push(movedTile);
 					i += 1;
 				}
 			}
 
-			// Fill remainder with nulls
-			while (newColumn.length < this.height) {
-				newColumn.push(null);
+			// Fill empty spaces to maintain matrix
+			while (newLine.length < innerLimit) {
+				newLine.push(null);
 			}
 
-			for (let y = 0; y < this.height; y++) {
-				this.grid[y][x] = newColumn[this.height - 1 - y];
+			// Add updated lines back into the grid
+			for (let inner = 0; inner < innerLimit; inner++) {
+				const x = isVertical ? outer : inner;
+				const y = isVertical ? inner : outer;
+				const index = isReverse ? innerLimit - 1 - inner : inner;
+				this.grid[y][x] = newLine[index];
 			}
-		}
-
-		if (moved) {
-			this.createSingleIsotope();
-			this.notify();
-			// this.checkEnd();
-		}
-	}
-
-	moveLeft(): void {
-		let moved = false;
-
-		for (let y = 0; y < this.height; y++) {
-			const originalRow = this.grid[y];
-			const filtered = originalRow.filter((cell): cell is Isotope => cell !== null);
-
-			const newRow: (Isotope | null)[] = [];
-			let x = 0;
-
-			while (x < filtered.length) {
-				const current = filtered[x];
-				const next = filtered[x + 1];
-
-				if (next && current.mass === next.mass) {
-					// Merge
-					const merged: Isotope = {
-						id: this.nextId++,
-						mass: current.mass * 2,
-						x: newRow.length,
-						y,
-						new: true, // maybe
-					};
-					newRow.push(merged);
-					x += 2;
-					moved = true;
-				} else {
-					// Slide
-					const movedTile: Isotope = {
-						...current,
-						x: newRow.length,
-						y
-					};
-					if (movedTile.x !== current.x) moved = true;
-					newRow.push(movedTile);
-					x += 1;
-				}
-			}
-
-			// Fill remainder with nulls
-			while (newRow.length < this.width) {
-				newRow.push(null);
-			}
-
-			this.grid[y] = newRow;
-		}
-
-		if (moved) {
-			this.createSingleIsotope();
-			this.notify();
-			// this.checkEnd();
-		}
-	}
-
-	moveRight(): void {
-		let moved = false;
-
-		for (let y = 0; y < this.height; y++) {
-			const originalRow = this.grid[y];
-			const filtered = originalRow.filter((cell): cell is Isotope => cell !== null).reverse();
-
-			const newRow: (Isotope | null)[] = [];
-			let i = 0;
-
-			while (i < filtered.length) {
-				const current = filtered[i];
-				const next = filtered[i + 1];
-
-				if (next && current.mass === next.mass) {
-					// Merge
-					const merged: Isotope = {
-						id: this.nextId++,
-						mass: current.mass * 2,
-						x: this.width - 1 - newRow.length,
-						y,
-						new: true, // maybe
-					};
-					newRow.push(merged);
-					i += 2;
-					moved = true;
-				} else {
-					// Slide
-					const movedTile: Isotope = {
-						...current,
-						x: this.width - 1 - newRow.length,
-						y
-					};
-					if (movedTile.x !== current.x) moved = true;
-					newRow.push(movedTile);
-					i += 1;
-				}
-			}
-
-			// Fill remainder with nulls
-			while (newRow.length < this.width) {
-				newRow.push(null);
-			}
-
-			this.grid[y] = newRow.reverse();
 		}
 
 		if (moved) {
