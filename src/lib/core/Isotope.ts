@@ -3,4 +3,5 @@ export type Isotope = {
 	mass: number;
 	x: number;
 	y: number;
+	new: boolean;
 };

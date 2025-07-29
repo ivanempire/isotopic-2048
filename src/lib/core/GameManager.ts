@@ -1,3 +1,4 @@
+import { tick } from "svelte";
 import type { Isotope } from "$lib/core/Isotope";
 import { gameState } from "$lib/stores/gameState.svelte";
 
@@ -40,7 +41,8 @@ export class GameManager {
 						id: this.nextId++,
 						mass,
 						x,
-						y
+						y,
+						new: true,
 					};
 				}
 			}
@@ -62,7 +64,8 @@ export class GameManager {
 			id: this.nextId++,
 			mass,
 			x,
-			y
+			y,
+			new: true,
 		};
 	}
 
@@ -82,7 +85,8 @@ export class GameManager {
 				id: this.nextId++,
 				mass,
 				x,
-				y
+				y,
+				new: true,
 			};
 		}
 	}
@@ -111,7 +115,8 @@ export class GameManager {
 						id: this.nextId++,
 						mass: current!.mass * 2,
 						x,
-						y: newColumn.length
+						y: newColumn.length,
+						new: true, // maybe
 					};
 					newColumn.push(merged);
 					y += 2;
@@ -170,7 +175,8 @@ export class GameManager {
 						id: this.nextId++,
 						mass: current!.mass * 2,
 						x,
-						y: this.height - 1 - newColumn.length
+						y: this.height - 1 - newColumn.length,
+						new: true, // maybe
 					};
 					newColumn.push(merged);
 					i += 2;
@@ -225,7 +231,8 @@ export class GameManager {
 						id: this.nextId++,
 						mass: current.mass * 2,
 						x: newRow.length,
-						y
+						y,
+						new: true, // maybe
 					};
 					newRow.push(merged);
 					x += 2;
@@ -278,7 +285,8 @@ export class GameManager {
 						id: this.nextId++,
 						mass: current.mass * 2,
 						x: this.width - 1 - newRow.length,
-						y
+						y,
+						new: true, // maybe
 					};
 					newRow.push(merged);
 					i += 2;
@@ -325,17 +333,41 @@ export class GameManager {
 		return empty;
 	}
 
-	private notify(): void {
+	private async notify(): void {
 		// TODO: Sort of hacky for now, see if directly setting it will break reactivity or not
 		const snapshot = this.grid.map((row) => row.map((cell) => (cell ? { ...cell } : null)));
 
+		// const snapshot = this.grid.map((row) =>
+		// 	row.map((cell) => {
+		// 		if (!cell) return null;
+		// 		const copy = { ...cell };
+		// 		// Clear 'new' after animation trigger
+		// 		if (copy.new) copy.new = false;
+		// 		return copy;
+		// 	})
+		// );
+
 		gameState.grid = snapshot;
 
+		// self.score += merged.value + (tile.unstable > 0 ? tile.unstable * 2 : 0) + (next.unstable > 0 ? next.unstable * 2 : 0);
 		const score = this.calculateScore();
 
 		// TODO: Adjust
 		gameState.currentScore = score;
 		gameState.bestScore = score;
+
+		// Wait for Svelte to flush DOM updates (including binding to grid)
+		await tick();
+
+		// Clear 'new' flags AFTER the DOM has rendered
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const cell = this.grid[y][x];
+				if (cell?.new) {
+					cell.new = false;
+				}
+			}
+		}
 	}
 
 	private calculateScore(): number {

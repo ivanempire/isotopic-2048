@@ -21,7 +21,7 @@
 			{#if cell}
 				{@const style = getLabelFromMass(cell.mass)}
 				<div
-					class="cell occupied {style.stylingClass} unstable"
+					class="cell occupied {style.stylingClass} {cell.new ? 'new' : ''}"
 					style="
 					display: flex;
 					justify-content: center;
@@ -65,6 +65,12 @@
 		justify-content: center;
 		font-weight: bold;
 		font-size: 1.2rem;
+		-webkit-transition: 100ms ease-in-out;
+		-moz-transition: 100ms ease-in-out;
+		transition: 100ms ease-in-out;
+		-webkit-transition-property: -webkit-transform;
+		-moz-transition-property: -moz-transform;
+		transition-property: transform;
 	}
 
 	.occupied {
@@ -150,12 +156,12 @@
 	}
 
 	.new {
-		-webkit-animation: appear 200ms ease 100ms;
-		-moz-animation: appear 200ms ease 100ms;
-		animation: appear 200ms ease 100ms;
-		-webkit-animation-fill-mode: backwards;
-		-moz-animation-fill-mode: backwards;
-		animation-fill-mode: backwards;
+		/*-webkit-animation: appear 200ms ease 100ms;*/
+		/*-moz-animation: appear 200ms ease 100ms;*/
+		/*animation: appear 200ms ease 100ms;*/
+		/*-webkit-animation-fill-mode: backwards;*/
+		/*-moz-animation-fill-mode: backwards;*/
+		/*animation-fill-mode: backwards;*/
 	}
 
 	@keyframes appear {
@@ -203,6 +209,20 @@
 			margin-left: 0;
 		}
 	}
+
+  @keyframes pop {
+      0% {
+          transform: scale(0);
+      }
+
+      50% {
+          transform: scale(1.2);
+      }
+
+      100% {
+          transform: scale(1);
+      }
+  }
 
 	/*.unstable {*/
 	/*    -webkit-animation-name: shake;*/
