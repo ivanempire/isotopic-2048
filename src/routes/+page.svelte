@@ -15,11 +15,26 @@
 	let swipeInterceptor: SwipeInterceptor;
 	/* eslint-enable @typescript-eslint/no-unused-vars */
 
+	let gridElement: any;
+
 	// TODO: May not be needed...
 	onMount(() => {
 		manager = new GameManager(4, 4);
 		keyInterceptor = new KeyInterceptor(manager);
 		swipeInterceptor = new SwipeInterceptor(manager);
+
+		if (gridElement) {
+			const preventScroll = (event: TouchEvent) => {
+				event.preventDefault();
+			};
+
+			gridElement.addEventListener("touchmove", preventScroll, { passive: false });
+
+			// Cleanup if needed
+			return () => {
+				gridElement.removeEventListener("touchmove", preventScroll);
+			};
+		}
 	});
 </script>
 
@@ -31,6 +46,6 @@
 	</div>
 
 	{#if gameState.grid.length}
-		<Grid width={4} height={4} />
+		<Grid bind:this={gridElement} width={4} height={4} />
 	{/if}
 </section>
