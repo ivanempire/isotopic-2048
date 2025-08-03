@@ -1,84 +1,108 @@
 <script lang="ts">
 	export let width: number;
 	export let height: number;
+
+	import Stencil from "$lib/ui/Stencil.svelte";
 	import { gameState } from "$lib/stores/gameState.svelte";
 	import { getLabelFromMass } from "$lib/core/IsotopeStyling";
 </script>
 
 <article
-	style="
-    display: grid;
-    border-radius: 6px;
-    background-color: #bbada0;
-    grid-template-columns: repeat({width}, 1fr);
-    grid-template-rows: repeat({height}, 1fr);
-    padding: 15px;
-    gap: 15px;
-  "
+	class="grid-wrapper"
+	style="--cols: {width}; --rows: {height}; --gap: 15px; --padding: 15px;"
 >
-	{#each gameState.grid as row}
-		{#each row as cell}
+	<Stencil {width} {height} />
+
+	<div class="tile-layer">
+		{#each gameState.grid.flat() as cell (cell ? cell.id : Math.random())}
 			{#if cell}
 				{@const style = getLabelFromMass(cell.mass)}
 				<div
 					class="cell occupied {style.stylingClass} {cell.new ? 'new' : ''}"
 					style="
-					display: flex;
-					justify-content: center;
-					font-weight: bold;
-					font-size: 55px;
-					align-items: center;
-					border-radius: 50%;
-					position: relative;
-				"
+	left: calc(var(--padding) + ({cell.x}) * (100% - 2 * var(--padding) - (var(--cols) - 1) * var(--gap)) / var(--cols) + {cell.x} * var(--gap));
+	top: calc(var(--padding) + ({cell.y}) * (100% - 2 * var(--padding) - (var(--rows) - 1) * var(--gap)) / var(--rows) + {cell.y} * var(--gap));
+"
 					title={style.name}
 				>
-					{style.label}
-
-					{#if cell.decay !== undefined}
-						<div
-							style="
-							position: absolute;
-							bottom: 4px;
-							right: 6px;
-							font-size: 0.75rem;
-							opacity: 0.7;
-						"
-						>
-							{cell.decay}
-						</div>
-					{/if}
+					<div class="content">
+						<div class="mass-block">{cell.mass}</div>
+						<div class="label">{style.label}</div>
+						{#if cell.decayCount !== undefined}
+							<div class="decay">{cell.decayCount}</div>
+						{/if}
+					</div>
 				</div>
-			{:else}
-				<div class="cell empty"></div>
 			{/if}
 		{/each}
-	{/each}
+	</div>
 </article>
 
 <style>
-	.cell {
-		aspect-ratio: 1 / 1;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: bold;
-		font-size: 1.2rem;
-		-webkit-transition: 100ms ease-in-out;
-		-moz-transition: 100ms ease-in-out;
-		transition: 100ms ease-in-out;
-		-webkit-transition-property: -webkit-transform;
-		-moz-transition-property: -moz-transform;
-		transition-property: transform;
+	.grid-wrapper {
+		position: relative;
+		width: 100%;
+		aspect-ratio: var(--cols) / var(--rows);
 	}
 
+	.tile-layer {
+		position: absolute;
+		inset: 0;
+		padding: 15px;
+	}
+
+	.cell {
+		border-radius: 50%;
+	}
+
+	.tile-layer .cell {
+		position: absolute;
+		width: calc((100% - (var(--cols) - 1) * var(--gap) - 2 * var(--padding)) / var(--cols));
+		height: calc((100% - (var(--rows) - 1) * var(--gap) - 2 * var(--padding)) / var(--rows));
+	}
+
+	.cell .content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		position: relative;
+		text-align: center;
+	}
+
+	.mass-block {
+		align-self: flex-start;
+		margin-left: 8px;
+		margin-top: 6px;
+		margin-bottom: 4px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		opacity: 0.8;
+		background-color: rgba(255, 255, 255, 0.3);
+		padding: 2px 6px;
+		border-radius: 4px;
+		pointer-events: none;
+	}
+
+	.label {
+		font-size: 1.8rem;
+		font-weight: bold;
+		pointer-events: none;
+		line-height: 1;
+	}
+
+	.decay {
+		position: absolute;
+		bottom: 4px;
+		right: 6px;
+		font-size: 0.75rem;
+		opacity: 0.7;
+		pointer-events: none;
+	}
 	.occupied {
 		background: #ccc;
-	}
-
-	.empty {
-		background: #cdc1b4;
 	}
 
 	.hydrogen-2 {
@@ -154,89 +178,4 @@
 			0 0 30px 10px #edcf72,
 			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
 	}
-
-	.new {
-		/*-webkit-animation: appear 200ms ease 100ms;*/
-		/*-moz-animation: appear 200ms ease 100ms;*/
-		/*animation: appear 200ms ease 100ms;*/
-		/*-webkit-animation-fill-mode: backwards;*/
-		/*-moz-animation-fill-mode: backwards;*/
-		/*animation-fill-mode: backwards;*/
-	}
-
-	@keyframes appear {
-		0% {
-			opacity: 0;
-			-webkit-transform: scale(0);
-			-moz-transform: scale(0);
-			transform: scale(0);
-		}
-
-		100% {
-			opacity: 1;
-			-webkit-transform: scale(1);
-			-moz-transform: scale(1);
-			transform: scale(1);
-		}
-	}
-
-	@-webkit-keyframes shake {
-		from {
-			width: 115px;
-			height: 115px;
-			margin-left: -4px;
-			margin-top: -4px;
-		}
-		to {
-			width: 107px;
-			height: 107px;
-			margin-left: 0;
-			margin-top: 0;
-		}
-	}
-
-	@-moz-keyframes shake {
-		from {
-			width: 115px;
-			height: 115px;
-			margin-top: -4px;
-			margin-left: -4px;
-		}
-		to {
-			width: 107px;
-			height: 107px;
-			margin-top: 0;
-			margin-left: 0;
-		}
-	}
-
-  @keyframes pop {
-      0% {
-          transform: scale(0);
-      }
-
-      50% {
-          transform: scale(1.2);
-      }
-
-      100% {
-          transform: scale(1);
-      }
-  }
-
-	/*.unstable {*/
-	/*    -webkit-animation-name: shake;*/
-	/*    -webkit-animation-duration: 0.1s;*/
-	/*    -webkit-transition-property: -webkit-transform;*/
-	/*    -webkit-transition-duration: 1s;*/
-	/*    -webkit-animation-iteration-count: infinite;*/
-	/*    -webkit-animation-timing-function: linear;*/
-
-	/*    -moz-animation-name: shake;*/
-	/*    -moz-animation-duration: 0.1s;*/
-	/*    -moz-transition-property: -moz-transform;*/
-	/*    -moz-transition-duration: 1s;*/
-	/*    -moz-animation-iteration-count: infinite;*/
-	/*    -moz-animation-timing-function: linear;*/
-	/*}*/
 </style>
