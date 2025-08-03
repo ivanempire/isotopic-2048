@@ -23,6 +23,7 @@
 		keyInterceptor = new KeyInterceptor(manager);
 		swipeInterceptor = new SwipeInterceptor(manager);
 
+		// TODO: Not sure why this doesn't work
 		if (gridElement) {
 			const preventScroll = (event: TouchEvent) => {
 				event.preventDefault();

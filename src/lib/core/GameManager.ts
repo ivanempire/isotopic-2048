@@ -20,7 +20,7 @@ export class GameManager {
 			Array.from({ length: this.width }, () => null)
 		);
 		this.nextId = 0;
-		this.createInitialPair();
+		this.createIsotopes(2);
 		// this.createDebugGrid();
 		this.notify();
 		gameState.status = "PLAYING";
@@ -52,31 +52,11 @@ export class GameManager {
 		this.notify();
 	}
 
-	private createSingleIsotope(): void {
+	private createIsotopes(isotopeCount: number = 1): void {
 		const empty = this.getEmptyCells();
 		if (empty.length === 0) return;
 
-		const index = Math.floor(Math.random() * empty.length);
-		const { x, y } = empty.splice(index, 1)[0];
-
-		const mass = Math.random() < 0.9 ? 2 : 4;
-
-		this.grid[y][x] = {
-			id: this.nextId++,
-			mass,
-			x,
-			y,
-			new: true
-		};
-	}
-
-	private createInitialPair(): void {
-		const empty = this.getEmptyCells();
-		if (empty.length === 0) return;
-
-		const spawnCount = Math.min(2, empty.length);
-
-		for (let i = 0; i < spawnCount; i++) {
+		for (let i = 0; i < isotopeCount; i++) {
 			const index = Math.floor(Math.random() * empty.length);
 			const { x, y } = empty.splice(index, 1)[0];
 
@@ -124,9 +104,12 @@ export class GameManager {
 
 				// Handle fusing two isotopes together
 				if (next && current!.mass === next.mass) {
+					const mergedMass = current!.mass * 2;
+					const decayCount = this.getDecayCountForMass(mergedMass);
+
 					const merged: Isotope = {
 						id: this.nextId++,
-						mass: current!.mass * 2,
+						mass: mergedMass,
 						x: isVertical
 							? outer
 							: isReverse
@@ -137,9 +120,15 @@ export class GameManager {
 								? this.height - 1 - newLine.length
 								: newLine.length
 							: outer,
-						new: true
+						new: true,
+						radioactive: decayCount !== undefined,
+						decayCount
 					};
 					newLine.push(merged);
+
+					// const bonus = (currentUnstable > 0 ? currentUnstable * 2 : 0)
+					//                 + (nextUnstable > 0 ? nextUnstable * 2 : 0);
+					// this.score += newMass;
 					i += 2;
 					moved = true;
 				} else {
@@ -178,7 +167,7 @@ export class GameManager {
 		}
 
 		if (moved) {
-			this.createInitialPair();
+			this.createIsotopes();
 			this.notify();
 			// this.checkEnd();
 		}
@@ -238,5 +227,12 @@ export class GameManager {
 	private calculateScore(): number {
 		// TODO: Look up scoring policy
 		return Math.floor(this.width / this.width);
+	}
+
+	private getDecayCountForMass(mass: number): number | undefined {
+		if (mass === 8 || mass === 32 || mass === 128 || mass > 256) {
+			return mass <= 256 ? mass - mass / 4 : 81;
+		}
+		return undefined;
 	}
 }

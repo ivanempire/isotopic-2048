@@ -5,4 +5,5 @@ export type Isotope = {
 	y: number;
 	new: boolean;
 	decayCount?: number;
+	radioactive?: boolean;
 };
