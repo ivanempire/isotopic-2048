@@ -167,6 +167,8 @@ export class GameManager {
 		}
 
 		if (moved) {
+			// TODO: Order should be correct?
+			this.decrementDecayCounters();
 			this.createIsotopes();
 			this.notify();
 			// this.checkEnd();
@@ -228,6 +230,21 @@ export class GameManager {
 		// TODO: Look up scoring policy
 		return Math.floor(this.width / this.width);
 	}
+
+	private decrementDecayCounters(): void {
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const cell = this.grid[y][x];
+				if (cell?.radioactive && typeof cell.decayCount === "number") {
+					cell.decayCount--;
+					if (cell.decayCount <= 0) {
+						this.grid[y][x] = null;
+					}
+				}
+			}
+		}
+	}
+
 
 	private getDecayCountForMass(mass: number): number | undefined {
 		if (mass === 8 || mass === 32 || mass === 128 || mass > 256) {
