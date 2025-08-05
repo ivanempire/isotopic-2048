@@ -45,6 +45,7 @@
 		position: relative;
 		width: 100%;
 		aspect-ratio: var(--cols) / var(--rows);
+		margin-bottom: 15px;
 	}
 
 	.tile-layer {
@@ -174,6 +175,14 @@
 	}
 
 	.unobtanium-1024 {
+		color: #f9f6f2;
+		background-color: #3c3a32;
+		box-shadow:
+			0 0 30px 10px #edcf72,
+			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+	}
+
+	.unobtanium-2048 {
 		color: #f9f6f2;
 		background-color: #3c3a32;
 		box-shadow:

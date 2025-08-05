@@ -6,13 +6,12 @@
 
 <style>
 	h1 {
-		font-size: 80px;
-		font-weight: bold;
+		font-size: 70px;
+		font-weight: 800;
 		margin: 0;
 		display: block;
 		float: left;
 		color: #776e65;
-		/* TODO: Import clear sans*/
-		font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+		font-family: "Nunito", sans-serif;
 	}
 </style>
