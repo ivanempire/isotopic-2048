@@ -11,10 +11,12 @@
 	const GRID_WIDTH = 4;
 	const GRID_HEIGHT = 4;
 
+	let gridElement: HTMLElement;
+
 	onMount(() => {
 		const gameManager = new GameManager(GRID_WIDTH, GRID_HEIGHT);
 		new KeyInterceptor(gameManager);
-		new SwipeInterceptor(gameManager);
+		new SwipeInterceptor(gameManager, gridElement);
 	});
 </script>
 
@@ -31,7 +33,7 @@
 		>.
 	</p>
 
-	<Grid width={GRID_WIDTH} height={GRID_HEIGHT} />
+	<Grid bind:this={gridElement} width={GRID_WIDTH} height={GRID_HEIGHT} />
 
 	<p style="font-size: 18px;line-height: 1.65; margin-bottom:15px;color:#776e65;">
 		Modernized rewrite by <a

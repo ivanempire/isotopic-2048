@@ -7,13 +7,13 @@ export class SwipeInterceptor {
 	private touchStartY: number = 0;
 	private readonly minSwipeDistance: number = 30;
 
-	constructor(manager: GameManager) {
+	constructor(manager: GameManager, gridElement: HTMLElement) {
 		this.manager = manager;
 		this.handleTouchStart = this.handleTouchStart.bind(this);
 		this.handleTouchEnd = this.handleTouchEnd.bind(this);
 
-		window.addEventListener("touchstart", this.handleTouchStart, { passive: false });
-		window.addEventListener("touchend", this.handleTouchEnd, { passive: false });
+		gridElement.addEventListener("touchstart", this.handleTouchStart, { passive: false });
+		gridElement.addEventListener("touchend", this.handleTouchEnd, { passive: false });
 	}
 
 	private handleTouchStart(event: TouchEvent): void {
