@@ -18,6 +18,7 @@ export class SwipeInterceptor {
 
 	private handleTouchStart(event: TouchEvent): void {
 		if (event.touches.length !== 1) return;
+		event.preventDefault();
 		const touch = event.touches[0];
 		this.touchStartX = touch.clientX;
 		this.touchStartY = touch.clientY;
