@@ -18,7 +18,9 @@
 			{#if cell}
 				{@const style = getLabelFromMass(cell.mass)}
 				<div
-					class="cell occupied {style.stylingClass} {cell.new ? 'new' : ''} {cell.radioactive ? 'tile-unstable' : ''}"
+					class="cell occupied {style.stylingClass} {cell.new
+						? 'new'
+						: ''} {cell.radioactive ? 'tile-unstable' : ''}"
 					style="
 	left: calc(var(--padding) + ({cell.x}) * (100% - 2 * var(--padding) - (var(--cols) - 1) * var(--gap)) / var(--cols) + {cell.x} * var(--gap));
 	top: calc(var(--padding) + ({cell.y}) * (100% - 2 * var(--padding) - (var(--rows) - 1) * var(--gap)) / var(--rows) + {cell.y} * var(--gap));
@@ -179,29 +181,49 @@
 			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
 	}
 
-    @-webkit-keyframes shake {
-        from {width: 115px; height:115px; margin-left: -4px; margin-top: -4px;}
-        to {width: 107px; height: 107px; margin-left: 0; margin-top: 0;}
-    }
+	@-webkit-keyframes shake {
+		from {
+			width: 115px;
+			height: 115px;
+			margin-left: -4px;
+			margin-top: -4px;
+		}
+		to {
+			width: 107px;
+			height: 107px;
+			margin-left: 0;
+			margin-top: 0;
+		}
+	}
 
-    @-moz-keyframes shake {
-        from {width: 115px; height:115px; margin-top: -4px; margin-left: -4px;}
-        to {width: 107px; height: 107px; margin-top: 0; margin-left: 0;}
-    }
+	@-moz-keyframes shake {
+		from {
+			width: 115px;
+			height: 115px;
+			margin-top: -4px;
+			margin-left: -4px;
+		}
+		to {
+			width: 107px;
+			height: 107px;
+			margin-top: 0;
+			margin-left: 0;
+		}
+	}
 
-    .tile-unstable {
-        -webkit-animation-name: shake;
-        -webkit-animation-duration: 0.1s;
-        -webkit-transition-property: -webkit-transform;
-        -webkit-transition-duration: 1s;
-        -webkit-animation-iteration-count: infinite;
-        -webkit-animation-timing-function: linear;
+	.tile-unstable {
+		-webkit-animation-name: shake;
+		-webkit-animation-duration: 0.1s;
+		-webkit-transition-property: -webkit-transform;
+		-webkit-transition-duration: 1s;
+		-webkit-animation-iteration-count: infinite;
+		-webkit-animation-timing-function: linear;
 
-        -moz-animation-name: shake;
-        -moz-animation-duration: 0.1s;
-        -moz-transition-property: -moz-transform;
-        -moz-transition-duration: 1s;
-        -moz-animation-iteration-count: infinite;
-        -moz-animation-timing-function: linear;
-    }
+		-moz-animation-name: shake;
+		-moz-animation-duration: 0.1s;
+		-moz-transition-property: -moz-transform;
+		-moz-transition-duration: 1s;
+		-moz-animation-iteration-count: infinite;
+		-moz-animation-timing-function: linear;
+	}
 </style>

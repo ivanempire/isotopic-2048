@@ -8,7 +8,10 @@
 	import { KeyInterceptor } from "$lib/core/KeyInterceptor";
 	import { SwipeInterceptor } from "$lib/core/SwipeInterceptor";
 
-	let manager: GameManager;
+	const GRID_WIDTH = 4;
+	const GRID_HEIGHT = 4;
+
+	let gameManager: GameManager;
 
 	/* eslint-disable @typescript-eslint/no-unused-vars */
 	let keyInterceptor: KeyInterceptor;
@@ -19,9 +22,9 @@
 
 	// TODO: May not be needed...
 	onMount(() => {
-		manager = new GameManager(4, 4);
-		keyInterceptor = new KeyInterceptor(manager);
-		swipeInterceptor = new SwipeInterceptor(manager);
+		gameManager = new GameManager(GRID_WIDTH, GRID_HEIGHT);
+		keyInterceptor = new KeyInterceptor(gameManager);
+		swipeInterceptor = new SwipeInterceptor(gameManager);
 
 		// TODO: Not sure why this doesn't work
 		if (gridElement) {
@@ -47,6 +50,6 @@
 	</div>
 
 	{#if gameState.grid.length}
-		<Grid bind:this={gridElement} width={4} height={4} />
+		<Grid bind:this={gridElement} width={GRID_WIDTH} height={GRID_HEIGHT} />
 	{/if}
 </section>

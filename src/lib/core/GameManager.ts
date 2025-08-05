@@ -2,16 +2,19 @@ import { tick } from "svelte";
 import type { Isotope } from "$lib/core/Isotope";
 import { gameState } from "$lib/stores/gameState.svelte";
 import { Direction } from "$lib/core/Direction";
+import { ScoreManager } from "$lib/core/ScoreManager";
 
 export class GameManager {
-	width: number;
-	height: number;
-	private grid: (Isotope | null)[][] = [];
 	private nextId = 0;
+	private readonly width: number;
+	private readonly height: number;
+	private grid: (Isotope | null)[][] = [];
+	private scoreManager: ScoreManager;
 
 	constructor(width: number, height: number) {
 		this.width = width;
 		this.height = height;
+		this.scoreManager = new ScoreManager();
 		this.reset();
 	}
 
@@ -126,9 +129,12 @@ export class GameManager {
 					};
 					newLine.push(merged);
 
-					// const bonus = (currentUnstable > 0 ? currentUnstable * 2 : 0)
-					//                 + (nextUnstable > 0 ? nextUnstable * 2 : 0);
-					// this.score += newMass;
+					this.scoreManager.updateScore(
+						mergedMass +
+							(current!.decayCount ? current!.decayCount * 2 : 0) +
+							(next.decayCount ? next.decayCount * 2 : 0)
+					);
+
 					i += 2;
 					moved = true;
 				} else {
@@ -205,13 +211,6 @@ export class GameManager {
 
 		gameState.grid = snapshot;
 
-		// self.score += merged.value + (tile.unstable > 0 ? tile.unstable * 2 : 0) + (next.unstable > 0 ? next.unstable * 2 : 0);
-		const score = this.calculateScore();
-
-		// TODO: Adjust
-		gameState.currentScore = score;
-		gameState.bestScore = score;
-
 		// Wait for Svelte to flush DOM updates (including binding to grid)
 		await tick();
 
@@ -224,11 +223,6 @@ export class GameManager {
 				}
 			}
 		}
-	}
-
-	private calculateScore(): number {
-		// TODO: Look up scoring policy
-		return Math.floor(this.width / this.width);
 	}
 
 	private decrementDecayCounters(): void {
@@ -244,7 +238,6 @@ export class GameManager {
 			}
 		}
 	}
-
 
 	private getDecayCountForMass(mass: number): number | undefined {
 		if (mass === 8 || mass === 32 || mass === 128 || mass > 256) {
