@@ -191,48 +191,29 @@
 	}
 
 	@-webkit-keyframes shake {
-		from {
-			width: 115px;
-			height: 115px;
-			margin-left: -4px;
-			margin-top: -4px;
-		}
-		to {
-			width: 107px;
-			height: 107px;
-			margin-left: 0;
-			margin-top: 0;
-		}
+        from {
+            transform: scale(1.07);
+        }
+        to {
+            transform: scale(1.0);
+        }
 	}
 
 	@-moz-keyframes shake {
-		from {
-			width: 115px;
-			height: 115px;
-			margin-top: -4px;
-			margin-left: -4px;
-		}
-		to {
-			width: 107px;
-			height: 107px;
-			margin-top: 0;
-			margin-left: 0;
-		}
+        from {
+            transform: scale(1.07);
+        }
+        to {
+            transform: scale(1.0);
+        }
 	}
 
+	/*TODO: Put vendor stuff back */
 	.tile-unstable {
-		-webkit-animation-name: shake;
-		-webkit-animation-duration: 0.1s;
-		-webkit-transition-property: -webkit-transform;
-		-webkit-transition-duration: 1s;
-		-webkit-animation-iteration-count: infinite;
-		-webkit-animation-timing-function: linear;
-
-		-moz-animation-name: shake;
-		-moz-animation-duration: 0.1s;
-		-moz-transition-property: -moz-transform;
-		-moz-transition-duration: 1s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-timing-function: linear;
+        animation-name: shake;
+        animation-duration: 0.1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        transform-origin: center center;
 	}
 </style>
