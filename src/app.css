@@ -3,6 +3,7 @@
 @plugin "@tailwindcss/typography";
 
 body {
+	overscroll-behavior: none;
 	font-family: "Nunito", sans-serif;
 	font-weight: 400;
 	font-style: normal;

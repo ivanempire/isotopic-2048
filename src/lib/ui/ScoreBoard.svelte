@@ -17,11 +17,12 @@
 <style>
 	.scoreboard {
 		gap: 10px;
+		width: 100%;
 		color: white;
 		display: flex;
-		width: fit-content;
 		flex-direction: row;
 		margin-bottom: 15px;
+		justify-content: flex-end;
 	}
 
 	.score-box {

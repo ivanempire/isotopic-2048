@@ -35,7 +35,7 @@
 
 	<Grid bind:this={gridElement} width={GRID_WIDTH} height={GRID_HEIGHT} />
 
-	<p style="font-size: 18px;line-height: 1.65; margin-bottom:15px;color:#776e65;">
+	<p style="font-size: 18px;line-height: 1.65; color:#776e65;">
 		Modernized rewrite by <a
 			href="https://github.com/ivanempire/isotopic-2048"
 			target="_blank"

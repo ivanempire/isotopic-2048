@@ -10,9 +10,11 @@ export class SwipeInterceptor {
 	constructor(manager: GameManager, gridElement: HTMLElement) {
 		this.manager = manager;
 		this.handleTouchStart = this.handleTouchStart.bind(this);
+		this.handleTouchMove = this.handleTouchMove.bind(this);
 		this.handleTouchEnd = this.handleTouchEnd.bind(this);
 
 		gridElement.addEventListener("touchstart", this.handleTouchStart, { passive: false });
+		gridElement.addEventListener("touchmove", this.handleTouchMove, { passive: false });
 		gridElement.addEventListener("touchend", this.handleTouchEnd, { passive: false });
 	}
 
@@ -22,6 +24,10 @@ export class SwipeInterceptor {
 		const touch = event.touches[0];
 		this.touchStartX = touch.clientX;
 		this.touchStartY = touch.clientY;
+	}
+
+	private handleTouchMove(event: TouchEvent): void {
+		event.preventDefault();
 	}
 
 	private handleTouchEnd(event: TouchEvent): void {
@@ -35,17 +41,9 @@ export class SwipeInterceptor {
 		}
 
 		if (Math.abs(deltaX) > Math.abs(deltaY)) {
-			if (deltaX > 0) {
-				this.manager.move(Direction.Right);
-			} else {
-				this.manager.move(Direction.Left);
-			}
+			this.manager.move(deltaX > 0 ? Direction.Right : Direction.Left);
 		} else {
-			if (deltaY > 0) {
-				this.manager.move(Direction.Down);
-			} else {
-				this.manager.move(Direction.Up);
-			}
+			this.manager.move(deltaY > 0 ? Direction.Down : Direction.Up);
 		}
 
 		event.preventDefault();
