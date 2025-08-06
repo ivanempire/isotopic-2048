@@ -4,7 +4,7 @@
 	import { gameState } from "$lib/stores/gameState.svelte";
 	import { getLabelFromMass } from "$lib/core/IsotopeStyling";
 
-	let { width, height, resetGame } = $props()
+	let { width, height, resetGame } = $props();
 </script>
 
 <article
@@ -27,8 +27,8 @@
 "
 					title={style.name}
 				>
-					<div class="content">
-						<div class="mass-block">{cell.mass}</div>
+					<div class="element">
+						<div class="mass">{cell.mass}</div>
 						<div class="label">{style.label}</div>
 						{#if cell.decayCount !== undefined}
 							<div class="decay">{cell.decayCount}</div>
@@ -55,27 +55,27 @@
 		margin-bottom: 15px;
 	}
 
-    .game-overlay {
-        color: white;
-        width: 100%;
-        height: 100%;
-        z-index: 100;
-        display: flex;
-        font-size: 4rem;
-        font-weight: bold;
-        position: absolute;
-        align-items: center;
+	.game-overlay {
+		color: white;
+		width: 100%;
+		height: 100%;
+		z-index: 100;
+		display: flex;
+		font-size: 4rem;
+		font-weight: bold;
+		position: absolute;
+		align-items: center;
 		flex-direction: column;
-        justify-content: center;
+		justify-content: center;
 		text-transform: uppercase;
-        background-color: rgba(246, 94, 59, 0.2);
-    }
+		background-color: rgba(246, 94, 59, 0.2);
+	}
 
-    .game-overlay button {
+	.game-overlay button {
 		padding: 5px 10px;
 		font-size: 1.5rem;
 		border-radius: 6px;
-        background: #f2b179;
+		background: #f2b179;
 	}
 
 	.tile-layer {
@@ -84,8 +84,27 @@
 		padding: 15px;
 	}
 
+	@keyframes appear {
+		from {
+			opacity: 0;
+			transform: scale(0);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
 	.cell {
 		border-radius: 50%;
+		transition:
+			left 100ms ease-in-out,
+			top 100ms ease-in-out;
+	}
+
+	/* TODO: Do not apply this to a fused one. */
+	.new {
+		animation: appear 200ms ease 100ms backwards;
 	}
 
 	.tile-layer .cell {
@@ -94,156 +113,121 @@
 		height: calc((100% - (var(--rows) - 1) * var(--gap) - 2 * var(--padding)) / var(--rows));
 	}
 
-	.cell .content {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
+	.element {
 		width: 100%;
 		height: 100%;
-		position: relative;
+		display: flex;
+		font-weight: bold;
 		text-align: center;
+		align-items: center;
+		flex-direction: column;
+		justify-content: center;
 	}
 
-	.mass-block {
-		align-self: flex-start;
-		margin-left: 8px;
-		margin-top: 6px;
-		margin-bottom: 4px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		opacity: 0.8;
-		background-color: rgba(255, 255, 255, 0.3);
-		padding: 2px 6px;
-		border-radius: 4px;
-		pointer-events: none;
+	.mass {
+		height: 1em;
+		line-height: 1;
+		font-size: 1.2em;
+		margin-bottom: 2px;
 	}
 
 	.label {
-		font-size: 1.8rem;
-		font-weight: bold;
-		pointer-events: none;
 		line-height: 1;
+		font-size: 2em;
 	}
 
 	.decay {
-		position: absolute;
-		bottom: 4px;
-		right: 6px;
-		font-size: 0.75rem;
+		height: 1em;
 		opacity: 0.7;
-		pointer-events: none;
-	}
-	.occupied {
-		background: #ccc;
+		line-height: 1;
+		margin-top: 2px;
+		font-size: 0.9em;
 	}
 
 	.hydrogen-2 {
 		color: #776e65;
 		background-color: #eee4da;
-		box-shadow:
-			0 0 30px 10px rgba(243, 215, 116, 0),
-			inset 0 0 0 1px rgba(255, 255, 255, 0);
 	}
 
 	.helium-4 {
 		color: #776e65;
-		background-color: #ede0c8;
-		box-shadow:
-			0 0 30px 10px rgba(243, 215, 116, 0),
-			inset 0 0 0 1px rgba(255, 255, 255, 0);
+		background-color: #eedebc;
 	}
 
 	.beryllium-8 {
 		color: #f9f6f2;
-		background-color: #f2b179;
+		background-color: #eaaa95;
 	}
 
 	.oxygen-16 {
 		color: #f9f6f2;
-		background-color: #f59563;
-		box-shadow:
-			0 0 30px 10px #f2b179,
-			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+		background-color: #efbe62;
+		box-shadow: 0 0 30px 10px #efbe62;
 	}
 
 	.phosphorus-32 {
 		color: #f9f6f2;
-		background-color: #f67c5f;
+		background-color: #e88868;
 	}
 
 	.nickel-64 {
 		color: #f9f6f2;
-		background-color: #f65e3b;
-		box-shadow:
-			0 0 30px 10px #f67c5f,
-			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+		background-color: #f1b162;
+		box-shadow: 0 0 30px 10px #f1b162;
 	}
 
 	.tin-128 {
 		color: #f9f6f2;
-		background-color: #edcf72;
-		box-shadow:
-			0 0 30px 10px rgba(243, 215, 116, 0.2381),
-			inset 0 0 0 1px rgba(255, 255, 255, 0.14286);
+		background-color: #e76a6e;
 	}
 
 	.nobelium-256 {
 		color: #f9f6f2;
-		background-color: #edcc61;
-		box-shadow:
-			0 0 30px 10px #edcf72,
-			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+		background-color: #fcc7ab;
+		box-shadow: 0 0 30px 10px #fcc7ab;
 	}
 
 	.germanium-512 {
 		color: #f9f6f2;
-		background-color: #3c3a32;
-		box-shadow:
-			0 0 30px 10px #edcf72,
-			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+		background-color: #f57345;
+		box-shadow: 0 0 30px 10px #f57345;
 	}
 
 	.unobtanium-1024 {
 		color: #f9f6f2;
-		background-color: #3c3a32;
-		box-shadow:
-			0 0 30px 10px #edcf72,
-			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+		background-color: #896ecf;
 	}
 
 	.unobtanium-2048 {
 		color: #f9f6f2;
-		background-color: #3c3a32;
-		box-shadow:
-			0 0 30px 10px #edcf72,
-			inset 0 0 0 1px rgba(255, 255, 255, 0.2381);
+		background-color: #f65e3b;
+		box-shadow: 0 0 30px 10px #f65e3b;
 	}
 
 	@-webkit-keyframes shake {
-        from {
-            transform: scale(1.07);
-        }
-        to {
-            transform: scale(1.0);
-        }
+		from {
+			transform: scale(1.07);
+		}
+		to {
+			transform: scale(1);
+		}
 	}
 
 	@-moz-keyframes shake {
-        from {
-            transform: scale(1.07);
-        }
-        to {
-            transform: scale(1.0);
-        }
+		from {
+			transform: scale(1.07);
+		}
+		to {
+			transform: scale(1);
+		}
 	}
 
 	/*TODO: Put vendor stuff back */
 	.tile-unstable {
-        animation-name: shake;
-        animation-duration: 0.1s;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear;
-        transform-origin: center center;
+		animation-name: shake;
+		animation-duration: 0.1s;
+		animation-iteration-count: infinite;
+		animation-timing-function: linear;
+		transform-origin: center center;
 	}
 </style>

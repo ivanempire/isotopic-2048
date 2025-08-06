@@ -1,8 +1,8 @@
 import { tick } from "svelte";
-import type { Isotope } from "$lib/core/Isotope";
-import { gameState } from "$lib/stores/gameState.svelte";
 import { Direction } from "$lib/core/Direction";
+import type { Isotope } from "$lib/core/Isotope";
 import { ScoreManager } from "$lib/core/ScoreManager";
+import { gameState } from "$lib/stores/gameState.svelte";
 
 export class GameManager {
 	private nextId = 0;
@@ -30,7 +30,7 @@ export class GameManager {
 	}
 
 	private createDebugGrid(): void {
-		const masses = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024];
+		const masses = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048];
 		let index = 0;
 
 		this.grid = Array.from({ length: this.height }, () =>
@@ -41,12 +41,15 @@ export class GameManager {
 			for (let x = 0; x < this.width; x++) {
 				if (index < masses.length) {
 					const mass = masses[index++];
+					const decayCount = this.getDecayCountForMass(mass);
 					this.grid[y][x] = {
 						id: this.nextId++,
 						mass,
 						x,
 						y,
-						new: true
+						new: true,
+						radioactive: decayCount !== undefined,
+						decayCount
 					};
 				}
 			}
@@ -173,12 +176,48 @@ export class GameManager {
 		}
 
 		if (moved) {
-			// TODO: Order should be correct?
 			this.decrementDecayCounters();
 			this.createIsotopes();
 			this.notify();
-			// this.checkEnd();
+			this.checkEnd();
 		}
+	}
+
+	private checkEnd(): void {
+		const hasWon = this.grid.some((row) =>
+			row.some((cell) => cell !== null && cell.mass >= 2048)
+		);
+		if (hasWon) {
+			gameState.status = "WIN";
+			return;
+		}
+
+		const hasMoves = this.getEmptyCells().length > 0 || this.hasMergeableAdjacentTiles();
+		if (!hasMoves) {
+			gameState.status = "LOSS";
+		}
+	}
+
+	private hasMergeableAdjacentTiles(): boolean {
+		for (let y = 0; y < this.height; y++) {
+			for (let x = 0; x < this.width; x++) {
+				const current = this.grid[y][x];
+				if (!current) continue;
+
+				// Go to the right
+				if (x + 1 < this.width) {
+					const right = this.grid[y][x + 1];
+					if (right && right.mass === current.mass) return true;
+				}
+
+				// Go down the grid
+				if (y + 1 < this.height) {
+					const down = this.grid[y + 1][x];
+					if (down && down.mass === current.mass) return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private getEmptyCells(): { x: number; y: number }[] {

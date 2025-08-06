@@ -23,12 +23,12 @@ export const getLabelFromMass = (mass: number): IsotopeStyling => {
 		case 256:
 			return { name: "Nobelium-256", label: "No", stylingClass: "nobelium-256" };
 		case 512:
-			return { name: "Germanium-512", label: "", stylingClass: "germanium-512" };
+			return { name: "Germanium-512", label: "Ge", stylingClass: "germanium-512" };
 		case 1024:
 			return { name: "Unobtanium-1024", label: "Un", stylingClass: "unobtanium-1024" };
 		case 2048:
 			return { name: "Unobtanium-2048", label: "Un", stylingClass: "unobtanium-2048" };
 		default:
-			return { name: "Germanium-32", label: "", stylingClass: "hydrogen-2" };
+			return { name: "Hydrogen-2", label: "H", stylingClass: "hydrogen-2" };
 	}
 };
