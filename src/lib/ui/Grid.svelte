@@ -1,10 +1,10 @@
 <script lang="ts">
-	export let width: number;
-	export let height: number;
-
+	import { fade } from "svelte/transition";
 	import Stencil from "$lib/ui/Stencil.svelte";
 	import { gameState } from "$lib/stores/gameState.svelte";
 	import { getLabelFromMass } from "$lib/core/IsotopeStyling";
+
+	let { width, height, resetGame } = $props()
 </script>
 
 <article
@@ -38,6 +38,13 @@
 			{/if}
 		{/each}
 	</div>
+
+	{#if gameState.status === "WIN" || gameState.status === "LOSS"}
+		<div class="game-overlay" transition:fade={{ duration: 300 }}>
+			<p>{gameState.status === "WIN" ? "You Win!" : "Game Over"}</p>
+			<button onclick={() => resetGame()}>Play again</button>
+		</div>
+	{/if}
 </article>
 
 <style>
@@ -46,6 +53,29 @@
 		width: 100%;
 		aspect-ratio: var(--cols) / var(--rows);
 		margin-bottom: 15px;
+	}
+
+    .game-overlay {
+        color: white;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        display: flex;
+        font-size: 4rem;
+        font-weight: bold;
+        position: absolute;
+        align-items: center;
+		flex-direction: column;
+        justify-content: center;
+		text-transform: uppercase;
+        background-color: rgba(246, 94, 59, 0.2);
+    }
+
+    .game-overlay button {
+		padding: 5px 10px;
+		font-size: 1.5rem;
+		border-radius: 6px;
+        background: #f2b179;
 	}
 
 	.tile-layer {
