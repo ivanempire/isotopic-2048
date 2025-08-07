@@ -11,13 +11,13 @@
 	const GRID_WIDTH = 4;
 	const GRID_HEIGHT = 4;
 
-	let gridElement: HTMLElement;
+	let gridRoot;
 	let gameManager: GameManager;
 
 	onMount(() => {
 		gameManager = new GameManager(GRID_WIDTH, GRID_HEIGHT);
 		new KeyInterceptor(gameManager);
-		new SwipeInterceptor(gameManager, gridElement);
+		new SwipeInterceptor(gameManager, gridRoot);
 	});
 </script>
 
@@ -26,16 +26,19 @@
 	<ScoreBoard currentScore={gameState.currentScore} bestScore={gameState.bestScore} />
 
 	<p style="font-size: 18px;line-height: 1.65; margin-bottom:15px;color:#776e65;">
-		Use your arrow or WASD keys to combine the elements to get Unobtanium-2048. Some isotopes
-		may not be around for <a
+		Use your arrow or WASD keys to combine the elements to get <a
+			href="https://youtu.be/b_HhiU1mOwU?feature=shared&t=45"
+			style="font-weight: bold;text-decoration: underline;"
+			target="_blank">Unobtanium-2048</a
+		>. Some isotopes may only be around for a certain number of
+		<a
 			href="https://i.programmerhumor.io/2021/06/programmerhumor-io-programming-memes-cae59c41c7a3538.jpg"
 			style="font-weight: bold;text-decoration: underline;"
-			target="_blank">long</a
+			target="_blank">moves</a
 		>.
 	</p>
-
 	<Grid
-		bind:this={gridElement}
+		bind:gridRoot
 		resetGame={() => {
 			gameManager.reset();
 		}}

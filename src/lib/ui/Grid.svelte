@@ -4,10 +4,11 @@
 	import { gameState } from "$lib/stores/gameState.svelte";
 	import { getLabelFromMass } from "$lib/core/IsotopeStyling";
 
-	let { width, height, resetGame } = $props();
+	let { width, height, resetGame, gridRoot = $bindable() } = $props();
 </script>
 
 <article
+	bind:this={gridRoot}
 	class="grid-wrapper"
 	style="--cols: {width}; --rows: {height}; --gap: 15px; --padding: 15px;"
 >
@@ -31,7 +32,9 @@
 						<div class="mass">{cell.mass}</div>
 						<div class="label">{style.label}</div>
 						{#if cell.decayCount !== undefined}
-							<div class="decay">{cell.decayCount}</div>
+							{#key cell.decayCount}
+								<div class="decay">{cell.decayCount}</div>
+							{/key}
 						{/if}
 					</div>
 				</div>
@@ -95,6 +98,17 @@
 		}
 	}
 
+	@keyframes pulse {
+		from {
+			opacity: 1;
+			visibility: visible;
+		}
+		to {
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
+
 	.cell {
 		border-radius: 50%;
 		transition:
@@ -142,6 +156,7 @@
 		line-height: 1;
 		margin-top: 2px;
 		font-size: 0.9em;
+		animation: pulse 1s ease forwards;
 	}
 
 	.hydrogen-2 {

@@ -126,7 +126,7 @@ export class GameManager {
 								? this.height - 1 - newLine.length
 								: newLine.length
 							: outer,
-						new: true,
+						new: false,
 						radioactive: decayCount !== undefined,
 						decayCount
 					};

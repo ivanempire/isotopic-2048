@@ -8,11 +8,14 @@ export default defineConfig({
 		tailwindcss(),
 		sveltekit(),
 		SvelteKitPWA({
-			strategies: "generateSW",
-			selfDestroying: true,
+			srcDir: "src",
+			injectRegister: "auto",
+			registerType: "autoUpdate",
+			filename: "service-worker.ts",
+			strategies: "injectManifest",
 			manifest: {
 				short_name: "Isotopic-2048",
-				name: "A radioactive version of 2048",
+				name: "Isotopic-2048",
 				start_url: "/",
 				scope: "/",
 				display: "standalone",
@@ -42,6 +45,21 @@ export default defineConfig({
 						purpose: "maskable"
 					}
 				]
+			},
+			includeAssets: [
+				"apple-touch-icon.png",
+				"favicon.svg",
+				"isotopic-192.png",
+				"isotopic-192-mask.png",
+				"isotopic-512.png",
+				"isotopic-512-mask.png"
+			],
+			workbox: {
+				globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
+				navigateFallback: "/"
+			},
+			devOptions: {
+				enabled: true
 			}
 		})
 	]
