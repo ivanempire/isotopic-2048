@@ -1,12 +1,15 @@
 /// <reference types="@sveltejs/kit" />
 import { build, files, version } from "$service-worker";
-
+import { precacheAndRoute, cleanupOutdatedCaches } from "workbox-precaching";
 const CACHE = `game-pwa-${version}`;
 
 // Only have one URL
 const START_URL = "/";
 const OFFLINE_URL = START_URL;
 const PRECACHE_URLS = [START_URL, ...build, ...files];
+
+cleanupOutdatedCaches();
+precacheAndRoute(self.__WB_MANIFEST);
 
 console.log("Is this empty? ", build);
 
