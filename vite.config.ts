@@ -4,6 +4,10 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { SvelteKitPWA } from "@vite-pwa/sveltekit";
 
 export default defineConfig({
+	server: {
+		host: "0.0.0.0",
+		port: 3000,
+	},
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
@@ -14,8 +18,8 @@ export default defineConfig({
 			filename: "service-worker.ts",
 			strategies: "injectManifest",
 			manifest: {
-				short_name: "Isotopic-2048",
 				name: "Isotopic-2048",
+				short_name: "Isotopic-2048",
 				start_url: "/",
 				scope: "/",
 				display: "standalone",
@@ -56,7 +60,9 @@ export default defineConfig({
 			],
 			workbox: {
 				globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
-				navigateFallback: "/"
+			},
+			injectManifest: {
+				globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
 			},
 			devOptions: {
 				enabled: true
