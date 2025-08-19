@@ -18,11 +18,12 @@ pnpm run dev
 This is a pretty typical Svelte 5 + SvelteKit project, and most of the interesting stuff lies in the [lib](src/lib) directory:
 
 - **[GameManager](src/lib/core/GameManager.ts)** - instantiated when the application starts. This class seeds the game board with the initial isotopes and handles all interactions after a user has moved. The global game state is also updated from here.
-- **[KeyInterceptor](src/lib/core/KeyInterceptor.ts)]** - handles the arrow and WASD key handling. Passes events into the `GameManager`.
-- **[SwipeInterceptor](src/lib/core/SwipeInterceptor.ts)]** - same as above, but handles swipe gestures on mobile.
+- **[KeyInterceptor](src/lib/core/KeyInterceptor.ts)** - handles the arrow and WASD key handling. Passes events into the `GameManager`.
+- **[SwipeInterceptor](src/lib/core/SwipeInterceptor.ts)** - same as above, but handles swipe gestures on mobile.
 - **[ScoreManager](src/lib/core/ScoreManager.ts)** - keeps track of the current and best scores. Uses `localStorage` to persist this information across games.
 - **[GameState](src/lib/core/GameState.ts)** - stores all information relevant to the current game's state.
 - **[Direction](src/lib/core/Direction.ts)**, **[Isotope](src/lib/core/Isotope.ts)**, **[IsotopeStyling](src/lib/core/IsotopeStyling.ts)** - various data models and helpers needed to make this game go.
 
 ## Acknowledgements
 The original idea for this concept belongs to [James Donnelly](https://jamesmdonnelly.com/), and their deployment can be found [here](https://jamesmdonnelly.com/Isotopic256/). Original 2048 game idea by [Gabriele Cirulli](https://www.linkedin.com/in/gabrielecirulli/).
+
