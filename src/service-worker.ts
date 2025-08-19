@@ -11,8 +11,6 @@ const PRECACHE_URLS = [START_URL, ...build, ...files];
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
-console.log("Is this empty? ", build);
-
 self.addEventListener("install", (event) => {
 	console.log("SW: install");
 	self.skipWaiting();
